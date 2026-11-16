@@ -123,6 +123,66 @@ def call_openai(system_prompt: str, user_payload: dict[str, Any]) -> Any:
     return json.loads(content)
 
 
+def call_openai_research(system_prompt: str, user_payload: dict[str, Any]) -> Any:
+    """Use Responses API hosted web search; retain only URLs actually cited by search."""
+    api_key = os.environ.get("OPENAI_API_KEY")
+    if not api_key:
+        raise RuntimeError("Не задан OPENAI_API_KEY.")
+    model = os.environ.get("OPENAI_RESEARCH_MODEL", "gpt-6-astra")
+    body = {
+        "model": model,
+        "tools": [{"type": "web_search", "external_web_access": True}],
+        "tool_choice": "required",
+        "text": {"format": {"type": "json_object"}},
+        "input": system_prompt + "\\n\\nВходные данные JSON:\\n" + json.dumps(user_payload, ensure_ascii=False),
+    }
+    request = urllib.request.Request(
+        "https://api.openai.com/v1/responses",
+        data=json.dumps(body).encode("utf-8"),
+        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=180) as response:
+            result = json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        detail = exc.read().decode("utf-8", errors="replace")
+        raise RuntimeError(f"Ошибка OpenAI Web Search API ({exc.code}): {detail[:1000]}") from exc
+    text_parts: list[str] = []
+    cited: dict[str, str] = {}
+    for output in result.get("output", []):
+        if output.get("type") != "message":
+            continue
+        for part in output.get("content", []):
+            if part.get("type") == "output_text":
+                text_parts.append(part.get("text", ""))
+                for annotation in part.get("annotations", []):
+                    if annotation.get("type") == "url_citation":
+                        url = annotation.get("url", "")
+                        if url.startswith("https://") or url.startswith("http://"):
+                            cited[url] = annotation.get("title") or url
+    if not text_parts:
+        raise RuntimeError("Web Search API не вернул текстовый результат.")
+    try:
+        parsed = json.loads("\\n".join(text_parts))
+    except json.JSONDecodeError as exc:
+        raise RuntimeError("Web Search API вернул некорректный JSON.") from exc
+    topics = parsed.get("topics") if isinstance(parsed, dict) else None
+    if not isinstance(topics, list):
+        raise RuntimeError("В ответе Web Search API отсутствует массив topics.")
+    for topic in topics:
+        verified_sources = []
+        for source in topic.get("sources", []):
+            url = source.get("url", "")
+            if url in cited:
+                verified_sources.append({
+                    "title": cited[url], "url": url,
+                    "source_type": source.get("source_type", "web_search"),
+                })
+        topic["sources"] = verified_sources
+        topic["status"] = "proposed" if verified_sources and not topic.get("claims_to_verify") else "needs_research"
+    return parsed
+
 def request_valid_topics(config: dict[str, Any], history: list[dict[str, Any]], prompt: str, max_attempts: int = 3) -> list[dict[str, Any]]:
     """Retry generation when the model proposes a duplicate; never accept it."""
     threshold = float(config.get("duplicate_similarity_threshold", 0.72))
@@ -140,7 +200,7 @@ def request_valid_topics(config: dict[str, Any], history: list[dict[str, Any]], 
             ),
             "required_output": "JSON object with key topics containing exactly 3 topic objects",
         }
-        result = call_openai(prompt, payload)
+        result = call_openai_research(prompt, payload)
         topics = result.get("topics") if isinstance(result, dict) else result
         try:
             return validate_topics(topics, history, threshold)
