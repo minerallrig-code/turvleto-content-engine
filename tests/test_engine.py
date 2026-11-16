@@ -33,7 +33,7 @@ class ContentEngineTests(unittest.TestCase):
             "freshness_reason": "Актуально для туристов",
             "claims_to_verify": [],
             "sources": [],
-            "status": "proposed"
+            "status": "needs_research"
         }
         with self.assertRaises(ValueError):
             engine.validate_topics([item, item, {**item, "title": "Третья тема"}], [], 0.7)
