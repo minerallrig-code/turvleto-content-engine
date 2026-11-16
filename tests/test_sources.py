@@ -42,5 +42,25 @@ class SourceCheckerTests(unittest.TestCase):
         self.assertEqual(report["topics"][0]["technical_status"], "no_sources")
 
 
+    def test_relevance_signal_uses_page_text_but_is_not_fact_check(self):
+        topic = {
+            "title": "Безопасность мотоцикл Муйне",
+            "destination": "Муйне",
+            "claims_to_verify": ["Правила безопасности мотоцикл"]
+        }
+        result = checker.classify_page_relevance(
+            "Безопасность мотоцикл Муйне правила безопасности туристов",
+            topic
+        )
+        self.assertIn(result["relevance_signal"], {"moderate", "strong"})
+        self.assertIn("не подтверждение", result["note"])
+
+    def test_empty_source_list_keeps_manual_review(self):
+        data = {"topics": [{"title": "Тема", "status": "needs_research", "sources": []}]}
+        report = checker.build_report(data)
+        self.assertEqual(report["topics"][0]["technical_status"], "no_sources")
+        self.assertEqual(data["topics"][0]["source_review_status"], "pending_editorial_review")
+
+
 if __name__ == "__main__":
     unittest.main()
