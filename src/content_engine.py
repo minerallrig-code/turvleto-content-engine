@@ -73,6 +73,15 @@ def validate_topics(topics: Any, history: list[dict[str, Any]], threshold: float
             raise ValueError("status должен быть proposed или needs_research.")
         if not isinstance(item["sources"], list) or not isinstance(item["claims_to_verify"], list):
             raise ValueError("sources и claims_to_verify должны быть массивами.")
+        for source in item["sources"]:
+            if not isinstance(source, dict):
+                raise ValueError("Каждый источник должен быть объектом.")
+            if not all(isinstance(source.get(key), str) and source[key].strip() for key in ("title", "url", "source_type")):
+                raise ValueError("У каждого источника должны быть непустые title, url и source_type.")
+            if not source["url"].startswith(("https://", "http://")):
+                raise ValueError("Ссылка источника должна начинаться с http:// или https://.")
+        if item["status"] == "proposed" and (not item["sources"] or item["claims_to_verify"]):
+            raise ValueError("Тема без источников или с непроверенными утверждениями должна иметь статус needs_research.")
         if is_duplicate(item, seen, threshold):
             raise ValueError(f"Обнаружен повтор темы: {item['title']}")
         seen.append(item)
