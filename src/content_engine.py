@@ -46,6 +46,10 @@ def token_similarity(left: str, right: str) -> float:
     return len(a & b) / len(a | b)
 
 
+class DuplicateTopicError(ValueError):
+    """Raised when a generated title repeats a historical or same-batch topic."""
+
+
 def is_duplicate(candidate: dict[str, Any], history: list[dict[str, Any]], threshold: float) -> bool:
     title = str(candidate.get("title", ""))
     fingerprint = normalize(title)
@@ -83,7 +87,7 @@ def validate_topics(topics: Any, history: list[dict[str, Any]], threshold: float
         if item["status"] == "proposed" and (not item["sources"] or item["claims_to_verify"]):
             raise ValueError("Тема без источников или с непроверенными утверждениями должна иметь статус needs_research.")
         if is_duplicate(item, seen, threshold):
-            raise ValueError(f"Обнаружен повтор темы: {item['title']}")
+            raise DuplicateTopicError(f"Обнаружен повтор темы: {item['title']}")
         seen.append(item)
         accepted.append(item)
     return accepted
