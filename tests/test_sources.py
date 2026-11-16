@@ -18,7 +18,7 @@ class SourceCheckerTests(unittest.TestCase):
     def test_invalid_scheme_is_rejected(self):
         result = checker.check_url("ftp://example.com")
         self.assertFalse(result["reachable"])
-        self.assertEqual(result["status"], "invalid_scheme")
+        self.assertEqual(result["status"], "invalid_url")
 
     @patch.object(checker, "check_url", return_value={"url": "https://example.com", "reachable": True, "status": "reachable"})
     def test_reachable_url_does_not_upgrade_editorial_status(self, mocked):
