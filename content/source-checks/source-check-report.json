@@ -1,9 +1,9 @@
 {
-  "checked_at": "2026-11-16T04:04:11.597814+00:00",
+  "checked_at": "2026-11-16T04:24:57.110463+00:00",
   "date": "2026-11-16",
   "topics": [
     {
-      "title": "Как оформить медицинскую страховку для путешествия во Вьетнам: практические рекомендации",
+      "title": "Какие документы нужны для въезда во Вьетнам в 2026 году туристам из России",
       "topic_status": "needs_research",
       "technical_status": "none_reachable",
       "sources": [
@@ -11,19 +11,19 @@
           "url": "https://vnembassy-moscow.mofa.gov.vn/ru-us/visa-information",
           "reachable": false,
           "http_status": 404,
-          "status": "http_error"
+          "status": "not_found"
         },
         {
-          "url": "https://www.rosstrakh.ru/services/insurance/travel",
+          "url": "https://www.mofa.gov.vn/en",
           "reachable": false,
-          "status": "check_failed",
-          "error": "<urlopen error [Errno -3] Temporary failure in name resolution>"
+          "http_status": 404,
+          "status": "not_found"
         }
       ],
-      "fact_check_note": "Доступность URL не подтверждает, что страница содержит доказательство для утверждений темы. Нужна ручная проверка содержания."
+      "fact_check_note": "Даже рабочая ссылка и лексическое совпадение не доказывают, что источник подтверждает утверждение. Проверьте содержание и дату публикации вручную."
     },
     {
-      "title": "Обзор лучших однодневных экскурсий из Дананга с русскоязычными гидами",
+      "title": "Лучшие однодневные экскурсии из Дананга с русскоязычными гидами",
       "topic_status": "needs_research",
       "technical_status": "none_reachable",
       "sources": [
@@ -31,26 +31,26 @@
           "url": "https://danang-travel.com/tours",
           "reachable": false,
           "http_status": 404,
-          "status": "http_error"
+          "status": "not_found"
         },
         {
           "url": "https://www.tripadvisor.com/Attractions-g298085-Activities-Da_Nang.html",
           "reachable": false,
           "http_status": 403,
-          "status": "http_error"
+          "status": "blocked_or_rate_limited"
         }
       ],
-      "fact_check_note": "Доступность URL не подтверждает, что страница содержит доказательство для утверждений темы. Нужна ручная проверка содержания."
+      "fact_check_note": "Даже рабочая ссылка и лексическое совпадение не доказывают, что источник подтверждает утверждение. Проверьте содержание и дату публикации вручную."
     },
     {
-      "title": "Советы по безопасному передвижению на мотоцикле в Муйне для русскоязычных туристов",
+      "title": "Советы по безопасному вождению мотоцикла в Муйне для русскоязычных туристов",
       "topic_status": "needs_research",
       "technical_status": "partially_reachable",
       "sources": [
         {
           "url": "https://www.mt.gov.vn/en",
           "reachable": false,
-          "status": "check_failed",
+          "status": "tls_error",
           "error": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1018)>"
         },
         {
@@ -58,12 +58,17 @@
           "reachable": true,
           "http_status": 200,
           "final_url": "https://www.lonelyplanet.com/about",
-          "status": "reachable",
-          "method": "HEAD"
+          "status": "redirected_same_host",
+          "content_type": "text/html",
+          "page_title": "About Lonely Planet | Travel Experts & Guides - Lonely Planet",
+          "relevance_signal": "weak",
+          "keyword_overlap": 0.0,
+          "matched_terms": [],
+          "note": "Лексическое совпадение — только ориентир для редактора, не подтверждение утверждений."
         }
       ],
-      "fact_check_note": "Доступность URL не подтверждает, что страница содержит доказательство для утверждений темы. Нужна ручная проверка содержания."
+      "fact_check_note": "Даже рабочая ссылка и лексическое совпадение не доказывают, что источник подтверждает утверждение. Проверьте содержание и дату публикации вручную."
     }
   ],
   "editorial_approval_required": true
-}\n
+}
