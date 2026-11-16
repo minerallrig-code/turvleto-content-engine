@@ -1,0 +1,69 @@
+{
+  "checked_at": "2026-11-16T04:04:11.597814+00:00",
+  "date": "2026-11-16",
+  "topics": [
+    {
+      "title": "Как оформить медицинскую страховку для путешествия во Вьетнам: практические рекомендации",
+      "topic_status": "needs_research",
+      "technical_status": "none_reachable",
+      "sources": [
+        {
+          "url": "https://vnembassy-moscow.mofa.gov.vn/ru-us/visa-information",
+          "reachable": false,
+          "http_status": 404,
+          "status": "http_error"
+        },
+        {
+          "url": "https://www.rosstrakh.ru/services/insurance/travel",
+          "reachable": false,
+          "status": "check_failed",
+          "error": "<urlopen error [Errno -3] Temporary failure in name resolution>"
+        }
+      ],
+      "fact_check_note": "Доступность URL не подтверждает, что страница содержит доказательство для утверждений темы. Нужна ручная проверка содержания."
+    },
+    {
+      "title": "Обзор лучших однодневных экскурсий из Дананга с русскоязычными гидами",
+      "topic_status": "needs_research",
+      "technical_status": "none_reachable",
+      "sources": [
+        {
+          "url": "https://danang-travel.com/tours",
+          "reachable": false,
+          "http_status": 404,
+          "status": "http_error"
+        },
+        {
+          "url": "https://www.tripadvisor.com/Attractions-g298085-Activities-Da_Nang.html",
+          "reachable": false,
+          "http_status": 403,
+          "status": "http_error"
+        }
+      ],
+      "fact_check_note": "Доступность URL не подтверждает, что страница содержит доказательство для утверждений темы. Нужна ручная проверка содержания."
+    },
+    {
+      "title": "Советы по безопасному передвижению на мотоцикле в Муйне для русскоязычных туристов",
+      "topic_status": "needs_research",
+      "technical_status": "partially_reachable",
+      "sources": [
+        {
+          "url": "https://www.mt.gov.vn/en",
+          "reachable": false,
+          "status": "check_failed",
+          "error": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1018)>"
+        },
+        {
+          "url": "https://www.lonelyplanet.com/thorntree/forums/asia/vietnam-motorbike-rental",
+          "reachable": true,
+          "http_status": 200,
+          "final_url": "https://www.lonelyplanet.com/about",
+          "status": "reachable",
+          "method": "HEAD"
+        }
+      ],
+      "fact_check_note": "Доступность URL не подтверждает, что страница содержит доказательство для утверждений темы. Нужна ручная проверка содержания."
+    }
+  ],
+  "editorial_approval_required": true
+}\n
