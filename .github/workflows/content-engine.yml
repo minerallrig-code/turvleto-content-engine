@@ -27,6 +27,7 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: gpt-4.1-mini
+          OPENAI_RESEARCH_MODEL: gpt-6-astra
         run: python src/content_engine.py generate
       - name: Check source URL availability
         shell: bash
