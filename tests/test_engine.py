@@ -30,6 +30,7 @@ class ContentEngineTests(unittest.TestCase):
             "category": "Транспорт",
             "reader_value": "Практическая польза",
             "angle": "Совет",
+            "freshness_reason": "Актуально для туристов",
             "claims_to_verify": [],
             "sources": [],
             "status": "proposed"
