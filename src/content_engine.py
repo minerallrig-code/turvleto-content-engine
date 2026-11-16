@@ -119,19 +119,38 @@ def call_openai(system_prompt: str, user_payload: dict[str, Any]) -> Any:
     return json.loads(content)
 
 
+def request_valid_topics(config: dict[str, Any], history: list[dict[str, Any]], prompt: str, max_attempts: int = 3) -> list[dict[str, Any]]:
+    """Retry generation when the model proposes a duplicate; never accept it."""
+    threshold = float(config.get("duplicate_similarity_threshold", 0.72))
+    rejected_titles: list[str] = []
+    last_error: DuplicateTopicError | None = None
+    for attempt in range(1, max_attempts + 1):
+        payload = {
+            "date": dt.date.today().isoformat(),
+            "configuration": config,
+            "recent_history": history[-250:],
+            "rejected_titles_this_run": rejected_titles,
+            "retry_instruction": (
+                "Предыдущая попытка содержала повтор. Не используй эти заголовки и не перефразируй их. Выбери другие задачи туристов и ракурсы."
+                if rejected_titles else ""
+            ),
+            "required_output": "JSON object with key topics containing exactly 3 topic objects",
+        }
+        result = call_openai(prompt, payload)
+        topics = result.get("topics") if isinstance(result, dict) else result
+        try:
+            return validate_topics(topics, history, threshold)
+        except DuplicateTopicError as exc:
+            last_error = exc
+            rejected_titles.append(str(exc).split("Обнаружен повтор темы: ", 1)[-1])
+            print(f"Предупреждение: попытка {attempt}/{max_attempts} отклонена из-за повтора. Запрашиваю другие темы.", file=sys.stderr)
+    raise RuntimeError(f"Не удалось получить 3 уникальные темы за {max_attempts} попытки. Последний повтор: {last_error}. История не изменена.")
+
 def generate_topics() -> list[dict[str, Any]]:
     config = read_json(TOPICS_PATH)
     history = read_json(HISTORY_PATH).get("items", [])
     prompt = TOPIC_PROMPT.read_text(encoding="utf-8")
-    payload = {
-        "date": dt.date.today().isoformat(),
-        "configuration": config,
-        "recent_history": history[-250:],
-        "required_output": "JSON object with key topics containing exactly 3 topic objects"
-    }
-    result = call_openai(prompt, payload)
-    topics = result.get("topics") if isinstance(result, dict) else result
-    accepted = validate_topics(topics, history, float(config.get("duplicate_similarity_threshold", 0.72)))
+    accepted = request_valid_topics(config, history, prompt)
     today = dt.date.today().isoformat()
     for item in accepted:
         item["created_at"] = dt.datetime.now(dt.timezone.utc).isoformat()
@@ -143,7 +162,6 @@ def generate_topics() -> list[dict[str, Any]]:
     write_json(SELECTED_DIR / f"topics-{today}.json", output)
     print(json.dumps(output, ensure_ascii=False, indent=2))
     return accepted
-
 
 def write_draft(topic_file: Path, topic_index: int) -> Path:
     selected = read_json(topic_file)
