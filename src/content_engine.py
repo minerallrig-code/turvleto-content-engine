@@ -134,7 +134,7 @@ def call_openai_research(system_prompt: str, user_payload: dict[str, Any]) -> An
         "tools": [{"type": "web_search", "external_web_access": True}],
         "tool_choice": "required",
         "text": {"format": {"type": "json_object"}},
-        "input": system_prompt + "\\n\\nВходные данные JSON:\\n" + json.dumps(user_payload, ensure_ascii=False),
+        "input": system_prompt + "\n\nВходные данные JSON:\n" + json.dumps(user_payload, ensure_ascii=False),
     }
     request = urllib.request.Request(
         "https://api.openai.com/v1/responses",
