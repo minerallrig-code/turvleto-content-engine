@@ -63,12 +63,14 @@ def validate_topics(topics: Any, history: list[dict[str, Any]], threshold: float
         raise ValueError("Генератор должен вернуть ровно 3 темы.")
     accepted: list[dict[str, Any]] = []
     seen: list[dict[str, Any]] = list(history)
-    required = {"title", "destination", "category", "reader_value", "angle", "claims_to_verify", "sources", "status"}
+    required = {"title", "destination", "category", "reader_value", "angle", "freshness_reason", "claims_to_verify", "sources", "status"}
     for item in topics:
         if not isinstance(item, dict) or not required.issubset(item):
             raise ValueError("Тема имеет неверную структуру или обязательные поля.")
-        if not all(isinstance(item[k], str) and item[k].strip() for k in ("title", "destination", "category", "reader_value", "angle", "status")):
+        if not all(isinstance(item[k], str) and item[k].strip() for k in ("title", "destination", "category", "reader_value", "angle", "freshness_reason", "status")):
             raise ValueError("Пустое обязательное текстовое поле в теме.")
+        if item["status"] not in {"proposed", "needs_research"}:
+            raise ValueError("status должен быть proposed или needs_research.")
         if not isinstance(item["sources"], list) or not isinstance(item["claims_to_verify"], list):
             raise ValueError("sources и claims_to_verify должны быть массивами.")
         if is_duplicate(item, seen, threshold):
@@ -125,7 +127,6 @@ def generate_topics() -> list[dict[str, Any]]:
     for item in accepted:
         item["created_at"] = dt.datetime.now(dt.timezone.utc).isoformat()
         item["date"] = today
-        item["status"] = "proposed"
         item["source_review_status"] = "pending"
     history.extend(accepted)
     write_json(HISTORY_PATH, {"schema_version": 1, "items": history})
