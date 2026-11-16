@@ -1,0 +1,20 @@
+{
+  "brand_name": "Тур в лето с Навигатор",
+  "primary_language": "ru",
+  "colors": {
+    "turquoise": "#18B7B0",
+    "gold": "#D6A84B"
+  },
+  "tone": [
+    "коротко",
+    "содержательно",
+    "практично",
+    "достоверно"
+  ],
+  "channels": [
+    "Telegram",
+    "MAX"
+  ],
+  "publishing_mode": "manual_approval_only",
+  "visual_direction": "Бирюзовый и золотой, чистая туристическая композиция, читаемый заголовок, без мелкого текста"
+}
