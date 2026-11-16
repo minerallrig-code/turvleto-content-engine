@@ -164,7 +164,7 @@ def call_openai_research(system_prompt: str, user_payload: dict[str, Any]) -> An
     if not text_parts:
         raise RuntimeError("Web Search API не вернул текстовый результат.")
     try:
-        parsed = json.loads("\\n".join(text_parts))
+        parsed = json.loads("\n".join(text_parts))
     except json.JSONDecodeError as exc:
         raise RuntimeError("Web Search API вернул некорректный JSON.") from exc
     topics = parsed.get("topics") if isinstance(parsed, dict) else None
