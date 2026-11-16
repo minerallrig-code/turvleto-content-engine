@@ -2,7 +2,7 @@ name: Turvleto Content Engine
 
 on:
   workflow_dispatch:
-  # Расписание будет включено после настройки OPENAI_API_KEY и успешного тестового запуска.
+  # Расписание включим после завершения редакционного контроля.
   # schedule:
   #   - cron: "0 1 * * *" # 08:00 Vietnam time (UTC+7)
 
@@ -14,9 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.11"
       - name: Install dependencies
@@ -28,10 +28,16 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: gpt-4.1-mini
         run: python src/content_engine.py generate
-      - name: Commit generated topics
+      - name: Check source URL availability
+        shell: bash
+        run: |
+          TOPIC_FILE="$(ls -t content/selected/topics-*.json | head -n 1)"
+          REPORT_FILE="content/source-checks/source-check-report.json"
+          python src/check_sources.py "$TOPIC_FILE" --report "$REPORT_FILE"
+      - name: Commit generated topics and source report
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add content/history.json content/selected/
-          git diff --cached --quiet || git commit -m "Add daily content topics"
+          git add content/history.json content/selected/ content/source-checks/
+          git diff --cached --quiet || git commit -m "Add daily topics and source check report"
           git push
