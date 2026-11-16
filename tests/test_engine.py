@@ -40,7 +40,7 @@ class ContentEngineTests(unittest.TestCase):
             engine.validate_topics([item, item, {**item, "title": "Третья тема"}], [], 0.7)
 
 
-    @patch.object(engine, "call_openai")
+    @patch.object(engine, "call_openai_research")
     def test_generation_retries_when_model_returns_historical_duplicate(self, mocked_call):
         def topic(title):
             return {
